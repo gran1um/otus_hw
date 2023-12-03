@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+	"github.com/leighmcculloch/go-strrev"
+)
+
 func main() {
-	// Place your code here.
+	phrase := "Hello, OTUS!"
+	fmt.Println(strrev.Reverse(phrase))
 }
