@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/leighmcculloch/go-strrev"
+
+	"golang.org/x/example/hello/reverse"
 )
 
 func main() {
 	phrase := "Hello, OTUS!"
-	fmt.Println(strrev.Reverse(phrase))
+	fmt.Println(reverse.String(phrase))
 }
