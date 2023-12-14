@@ -18,7 +18,6 @@ func Unpack(s string) (string, error) {
 	escapeMode := false
 
 	for i, r := range s {
-
 		if !unicode.IsDigit(r) && i+1 < len(s) && unicode.IsDigit(rune(s[i+1])) && rune(s[i+1]) == '0' {
 			runes := []rune(result)
 			result = string(runes[:len(runes)-1])
@@ -26,14 +25,12 @@ func Unpack(s string) (string, error) {
 		}
 
 		if escapeMode {
-
 			if r != '\\' && !unicode.IsDigit(r) {
 				return "", errors.New("invalid escape sequence")
 			}
 			if i+1 < len(s) && unicode.IsDigit(rune(s[i+1])) {
 				prevRune = r
 			}
-
 			result += string(r)
 			escapeMode = false
 			continue
@@ -59,12 +56,7 @@ func Unpack(s string) (string, error) {
 		} else {
 			result += string(r)
 		}
-
 		prevRune = r
-	}
-
-	if escapeMode {
-		return "", errors.New("string ends with a single backslash")
 	}
 
 	return result, nil
