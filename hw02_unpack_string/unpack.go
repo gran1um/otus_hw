@@ -13,12 +13,14 @@ func Unpack(s string) (string, error) {
 	var result strings.Builder
 	var prevRune rune
 	escapeMode := false
+	prevWasDigit := false
 
 	for _, r := range s {
 		if escapeMode {
 			result.WriteRune(r)
 			prevRune = r
 			escapeMode = false
+			prevWasDigit = false
 			continue
 		}
 
@@ -28,17 +30,19 @@ func Unpack(s string) (string, error) {
 		}
 
 		if unicode.IsDigit(r) {
-			if prevRune == 0 {
+			if prevRune == 0 || prevWasDigit {
 				return "", ErrInvalidString
 			}
 			if err := processDigit(r, prevRune, &result); err != nil {
 				return "", err
 			}
+			prevWasDigit = true
 			continue
 		}
 
 		result.WriteRune(r)
 		prevRune = r
+		prevWasDigit = false
 	}
 
 	if escapeMode {
