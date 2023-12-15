@@ -3,41 +3,23 @@ package hw02unpackstring
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(s string) (string, error) {
-	if len(s) > 0 && unicode.IsDigit(rune(s[0])) {
-		return "", ErrInvalidString
-	}
-
-	var result string
+	var result strings.Builder
 	var prevRune rune
 	escapeMode := false
 
-	for i, r := range s {
-		if !unicode.IsDigit(r) && i+1 < len(s) && unicode.IsDigit(rune(s[i+1])) && rune(s[i+1]) == '0' {
-			runes := []rune(result)
-			result = string(runes[:len(runes)-1])
-			i += 2
-		}
-
+	for _, r := range s {
 		if escapeMode {
-			if r != '\\' && !unicode.IsDigit(r) {
-				return "", errors.New("invalid escape sequence")
-			}
-			if i+1 < len(s) && unicode.IsDigit(rune(s[i+1])) {
-				prevRune = r
-			}
-			result += string(r)
+			result.WriteRune(r)
+			prevRune = r
 			escapeMode = false
 			continue
-		}
-
-		if unicode.IsDigit(r) && i+1 < len(s) && unicode.IsDigit(rune(s[i+1])) {
-			return "", ErrInvalidString
 		}
 
 		if r == '\\' {
@@ -47,17 +29,38 @@ func Unpack(s string) (string, error) {
 
 		if unicode.IsDigit(r) {
 			if prevRune == 0 {
-				return "", errors.New("string starts with a digit")
+				return "", ErrInvalidString
 			}
-			count, _ := strconv.Atoi(string(r))
-			for i := 0; i < count-1; i++ {
-				result += string(prevRune)
+			if err := processDigit(r, prevRune, &result); err != nil {
+				return "", err
 			}
-		} else {
-			result += string(r)
+			continue
 		}
+
+		result.WriteRune(r)
 		prevRune = r
 	}
 
-	return result, nil
+	if escapeMode {
+		return "", ErrInvalidString
+	}
+
+	return result.String(), nil
+}
+
+func processDigit(digitRune rune, prevRune rune, result *strings.Builder) error {
+	count, err := strconv.Atoi(string(digitRune))
+	if err != nil {
+		return err
+	}
+
+	if count == 0 && result.Len() > 0 {
+		str := result.String()
+		result.Reset()
+		result.WriteString(str[:len(str)-1])
+	} else if count > 1 {
+		result.WriteString(strings.Repeat(string(prevRune), count-1))
+	}
+
+	return nil
 }
