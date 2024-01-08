@@ -1,21 +1,16 @@
 package hw03frequencyanalysis
 
 import (
-	"fmt"
-	"regexp"
 	"sort"
 	"strings"
 )
 
 func Top10(text string) ([]string, error) {
-	reg := regexp.MustCompile(`\b[\w'-]+\b`)
-
 	words := strings.Fields(text)
 	frequency := make(map[string]int)
 
 	for _, word := range words {
-		cleanedWord := reg.ReplaceAllString(word, "")
-		frequency[cleanedWord]++
+		frequency[word]++
 	}
 
 	type kv struct {
@@ -38,8 +33,6 @@ func Top10(text string) ([]string, error) {
 	for i := 0; i < len(ss) && i < 10; i++ {
 		top10 = append(top10, ss[i].Key)
 	}
-
-	fmt.Println(ss)
 
 	return top10, nil
 }

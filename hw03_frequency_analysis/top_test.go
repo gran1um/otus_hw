@@ -92,4 +92,15 @@ func TestTop10(t *testing.T) {
 			require.Equal(t, expected, result)
 		}
 	})
+
+}
+
+func TestTop10WithPunctuation(t *testing.T) {
+	testText := `word1 word1, word2: word3; word4! "word5"? -word6- 'word7' (word8) [word9] {word10} word1 word2 word3`
+	expected := []string{"word1", "\"word5\"?", "'word7'", "(word8)", "-word6-", "[word9]", "word1,", "word2", "word2:", "word3"}
+	result, err := Top10(testText)
+	if err != nil {
+		fmt.Println(err)
+	}
+	require.Equal(t, expected, result)
 }
