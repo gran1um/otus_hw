@@ -8,11 +8,7 @@ import (
 )
 
 func Top10(text string) ([]string, error) {
-	reg, err := regexp.Compile(`\b[\w'-]+\b`)
-	if err != nil {
-		fmt.Println("Ошибка в регулярном выражении:", err)
-		return nil, err
-	}
+	reg := regexp.MustCompile(`\b[\w'-]+\b`)
 
 	words := strings.Fields(text)
 	frequency := make(map[string]int)
@@ -26,7 +22,7 @@ func Top10(text string) ([]string, error) {
 		Key   string
 		Value int
 	}
-	var ss []kv
+	ss := make([]kv, 0, len(frequency))
 	for k, v := range frequency {
 		ss = append(ss, kv{k, v})
 	}
