@@ -1,6 +1,7 @@
 package hw03frequencyanalysis
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -45,7 +46,11 @@ var text = `Как видите, он  спускается  по  лестни�
 
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
-		require.Len(t, Top10(""), 0)
+		result, err := Top10("")
+		if err != nil {
+			fmt.Println(err)
+		}
+		require.Len(t, result, 0)
 	})
 
 	t.Run("positive test", func(t *testing.T) {
@@ -62,7 +67,11 @@ func TestTop10(t *testing.T) {
 				"кристофер", // 4
 				"не",        // 4
 			}
-			require.Equal(t, expected, Top10(text))
+			result, err := Top10(text)
+			if err != nil {
+				fmt.Println(err)
+			}
+			require.Equal(t, expected, result)
 		} else {
 			expected := []string{
 				"он",        // 8
@@ -76,7 +85,24 @@ func TestTop10(t *testing.T) {
 				"не",        // 4
 				"то",        // 4
 			}
-			require.Equal(t, expected, Top10(text))
+			result, err := Top10(text)
+			if err != nil {
+				fmt.Println(err)
+			}
+			require.Equal(t, expected, result)
 		}
 	})
+}
+
+func TestTop10WithPunctuation(t *testing.T) {
+	testText := `word1 word1, word2: word3; word4! "word5"? -word6- 'word7' (word8) [word9] {word10} word1 word2 word3`
+	expected := []string{
+		"word1", "\"word5\"?", "'word7'", "(word8)", "-word6-", "[word9]", "word1,", "word2",
+		"word2:", "word3",
+	}
+	result, err := Top10(testText)
+	if err != nil {
+		fmt.Println(err)
+	}
+	require.Equal(t, expected, result)
 }
