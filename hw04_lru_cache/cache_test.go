@@ -75,8 +75,8 @@ func TestCache(t *testing.T) {
 
 		_, ok = c.Get("3")
 		require.False(t, ok, "Expected '3' to be absent from the cache after clear")
-
 	})
+
 	t.Run("empty cache", func(t *testing.T) {
 		c := NewCache(10)
 
