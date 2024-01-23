@@ -67,4 +67,30 @@ func TestRun(t *testing.T) {
 		require.Equal(t, runTasksCount, int32(tasksCount), "not all tasks were completed")
 		require.LessOrEqual(t, int64(elapsedTime), int64(sumTime/2), "tasks were run sequentially?")
 	})
+
+	t.Run("empty task list", func(t *testing.T) {
+		var runTasksCount int32
+		tasks := []Task{}
+
+		workersCount := 5
+		maxErrorsCount := 1
+
+		err := Run(tasks, workersCount, maxErrorsCount)
+		require.NoError(t, err)
+		require.Equal(t, int32(0), runTasksCount, "tasks were run despite being none")
+	})
+
+	t.Run("invalid number of workers", func(t *testing.T) {
+		tasks := []Task{
+			func() error { return nil },
+		}
+
+		workersCount := -1
+		maxErrorsCount := 1
+
+		err := Run(tasks, workersCount, maxErrorsCount)
+		require.Error(t, err)
+		require.Equal(t, errors.New("number of goroutines must be positive"), err, "error not as"+
+			"expected for negative number of workers")
+	})
 }
